@@ -1,0 +1,74 @@
+Known issues in repmgr
+======================
+
+* When running repmgr against a remote machine, operations that start
+  the database server using the ``pg_ctl`` command may accidentally
+  terminate after their associated ssh session ends.
+
+* PGPASSFILE may not be passed to pg_basebackup
+
+
+Planned feature improvements
+============================
+
+* Use 'primary' instead of 'master' in documentation and log output
+  for consistency with PostgreSQL documentation. See also commit
+  870b0a53b627eeb9aca1fc14cbafe25b5beafe12.
+
+* A better check which standby did receive most of the data
+
+* Make the fact that a standby may be delayed a factor in the voting
+  algorithm
+
+* include support for delayed standbys
+
+* Create the repmgr user/database on "master register".
+
+* Use pg_basebackup for the data directory, and ALSO rsync for the
+  configuration files.
+
+* If no configuration file supplied, search in sensible default locations
+  (currently: current directory and `pg_config --sysconfdir`); if
+  possible this should include the location provided by the package,
+  if installed.
+
+* repmgrd: if connection to the upstream node fails on startup, optionally
+  retry for a certain period before giving up; this will cover cases when
+  e.g. primary and standby are both starting up, and the standby comes up
+  before the primary. See github issue #80.
+
+* make old master node ID available for event notification commands
+  (See github issue #80).
+
+* repmgr standby clone: possibility to use barman instead of performing a new base backup
+
+* possibility to transform a failed master into a new standby with pg_rewind
+
+* "repmgr standby switchover" to promote a standby in a controlled manner
+   and convert the existing primary into a standby
+
+* make repmgrd more robust
+
+* repmgr: when cloning a standby using pg_basebackup and replication slots are
+  requested, activate the replication slot using pg_receivexlog to negate the
+  need to set `wal_keep_segments` just for the initial clone (9.4 and 9.5).
+
+* repmgr: enable "standby follow" to point a standby at another standby, not
+  just the replication cluster master (see GitHub #130)
+
+
+Usability improvements
+======================
+
+* repmgr: add interrupt handler, so that if the program is interrupted
+  while running a backup, an attempt can be made to execute pg_stop_backup()
+  on the primary, to prevent an orphaned backup state existing.
+
+* repmgr: when unregistering a node, delete any entries in the repl_monitoring
+  table.
+
+* repmgr: for "standby unregister", accept connection parameters for the
+  primary and perform metadata updates (and slot removal) directly on
+  the primary, to allow a shutdown standby to be unregistered
+  (currently the standby must still be running, which means the replication
+  slot can't be dropped).
