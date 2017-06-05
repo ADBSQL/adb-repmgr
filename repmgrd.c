@@ -2008,7 +2008,7 @@ do_master_failover(void)
 		initPQExpBuffer(&event_details);
 
 		/* wait */
-		sleep(60);
+		sleep(30);
 
 		/*
 		 * Check whether the primary reappeared while we were waiting, so we
