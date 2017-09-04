@@ -7712,7 +7712,7 @@ create_schema(PGconn *conn)
 					  "  conninfo         TEXT    NOT NULL, "
 					  "  slot_name        TEXT    NULL, "
 					  "  priority         INTEGER NOT NULL, "
-					  "  active           BOOLEAN NOT NULL DEFAULT TRUE ) distribute by hash(id) to NODE(%s)",
+					  "  active           BOOLEAN NOT NULL DEFAULT TRUE ) distribute by REPLICATION",
 					  get_repmgr_schema_quoted(conn), options.node_name);
 	}
 	else
