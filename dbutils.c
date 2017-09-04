@@ -675,6 +675,11 @@ get_upstream_connection(PGconn *standby_conn, char *cluster, int node_id,
 					  node_id);
 
 	log_verbose(LOG_DEBUG, "get_upstream_connection():\n%s\n", sqlquery);
+	
+#ifdef ADB
+	if (PQstatus(standby_conn) != CONNECTION_OK)
+		PQreset(standby_conn);
+#endif 
 
 	res = PQexec(standby_conn, sqlquery);
 
@@ -776,6 +781,11 @@ get_master_connection(PGconn *standby_conn, char *cluster,
 	{
 		*master_id = NODE_NOT_FOUND;
 	}
+
+#ifdef ADB
+	if (PQstatus(standby_conn) != CONNECTION_OK)
+		PQreset(standby_conn);
+#endif 
 
 	/* find all nodes belonging to this cluster */
 	log_info(_("retrieving node list for cluster '%s'\n"),
